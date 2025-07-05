@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Marathi Table Search Tool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>📝 Marathi Table Search</h1>
+
+    <div class="upload-section">
+      <label for="fileInput">Upload XLS Files:</label>
+      <input type="file" id="fileInput" accept=".xls" multiple>
+    </div>
+
+    <div class="search-section">
+      <label for="searchInput1">Marathi Word 1:</label>
+      <input type="text" id="searchInput1" placeholder="शब्द १">
+
+      <label for="searchInput2">Marathi Word 2:</label>
+      <input type="text" id="searchInput2" placeholder="शब्द २">
+
+      <label for="searchInput3">Marathi Word 3:</label>
+      <input type="text" id="searchInput3" placeholder="शब्द ३">
+
+      <label for="searchInput4">Marathi Word 4:</label>
+      <input type="text" id="searchInput4" placeholder="शब्द ४">
+
+      <label for="searchInput5">Marathi Word 5:</label>
+      <input type="text" id="searchInput5" placeholder="शब्द ५">
+
+      <label for="searchInput6">Marathi Word 6 (Variation Match):</label>
+      <input type="text" id="searchInput6" placeholder="शब्द ६">
+
+      <button onclick="searchWord()">Search</button>
+    </div>
+
+    <div id="resultSection">
+      <h2>Search Results</h2>
+      <div id="results"></div>
+    </div>
+
+    <button id="downloadBtn" onclick="downloadDoc()">⬇️ Download as Word</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.4.1/dist/html-docx.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

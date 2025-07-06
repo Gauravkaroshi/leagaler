@@ -1,101 +1,80 @@
 let matchedRows = [];
+let fourthColumnWords = new Set();
 
-function searchWord() {
-  matchedRows = [];
-
-  const words = [
-    document.getElementById("searchInput1").value.trim(),
-    document.getElementById("searchInput2").value.trim(),
-    document.getElementById("searchInput3").value.trim(),
-    document.getElementById("searchInput4").value.trim(),
-    document.getElementById("searchInput5").value.trim(),
-    document.getElementById("searchInput6").value.trim()
+function searchTables() {
+  const fileInput = document.getElementById('fileInput');
+  const resultDiv = document.getElementById('result');
+  const columnFilter = document.getElementById('columnFilter').value;
+  const searches = [
+    document.getElementById('search1').value.trim(),
+    document.getElementById('search2').value.trim(),
+    document.getElementById('search3').value.trim(),
+    document.getElementById('search4').value.trim(),
+    document.getElementById('search5').value.trim(),
+    document.getElementById('search6').value.trim()
   ];
 
-  const basicWords = words.slice(0, 5).filter(Boolean);  // First 5 words
-  const word6 = words[5];  // Special case for variation match
+  matchedRows = [];
+  fourthColumnWords.clear();
+  resultDiv.innerHTML = '';
 
-  if (!basicWords.length && !word6) {
-    alert("Please enter at least one Marathi word.");
-    return;
-  }
+  Array.from(fileInput.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(e.target.result, "text/html");
+      const tables = doc.querySelectorAll('table');
 
-  const files = document.getElementById("fileInput").files;
-  if (!files.length) {
-    alert("Please upload at least one .xls file.");
-    return;
-  }
+      tables.forEach(table => {
+        const rows = table.querySelectorAll('tr');
 
-  Array.from(files).forEach(file => {
-    if (file.name.endsWith(".xls")) {
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        const fileContent = event.target.result;
-        extractMatchingRows(fileContent, basicWords, word6);
-      };
-      reader.readAsText(file, "UTF-8");
-    } else {
-      alert("Only .xls files are supported.");
-    }
-  });
-}
+        rows.forEach(row => {
+          const cells = row.querySelectorAll('td, th');
+          const rowText = row.textContent;
+          const fourthColText = cells[3]?.textContent || "";
 
-function extractMatchingRows(htmlContent, searchWords, variationWord) {
-  const temp = document.createElement("div");
-  temp.innerHTML = htmlContent;
-  const rows = temp.querySelectorAll("tr");
+          if (cells.length >= 4) {
+            fourthColumnWords.add(fourthColText.trim());
+          }
 
-  rows.forEach(row => {
-    const rowText = row.innerText;
-    const baseMatch = searchWords.every(word => rowText.includes(word));
+          const matches = searches.every(word => word === "" || rowText.includes(word));
+          const matchFilter = columnFilter === "" || fourthColText.includes(columnFilter);
 
-    // Build flexible RegExp for searchInput6
-    if (baseMatch && variationWord) {
-      const pattern = variationWord
-        .replace(/ा/g, '[ा|]')
-        .replace(/ि/g, '[ि|]')
-        .replace(/ी/g, '[ी|]')
-        .replace(/ु/g, '[ु|]')
-        .replace(/ू/g, '[ू|]')
-        .replace(/े/g, '[े|]')
-        .replace(/ै/g, '[ै|]')
-        .replace(/ो/g, '[ो|]')
-        .replace(/ौ/g, '[ौ|]');
-      const regex6 = new RegExp(pattern, 'gi');
+          if (matches && matchFilter) {
+            const clonedRow = row.cloneNode(true);
+            searches.forEach(word => {
+              if (word) clonedRow.innerHTML = clonedRow.innerHTML.replaceAll(word, `<mark>${word}</mark>`);
+            });
+            if (columnFilter) clonedRow.innerHTML = clonedRow.innerHTML.replaceAll(columnFilter, `<mark>${columnFilter}</mark>`);
 
-      if (regex6.test(rowText)) {
-        let rowHTML = row.innerHTML;
-
-        searchWords.forEach(word => {
-          const regex = new RegExp(`(${word})`, 'gi');
-          rowHTML = rowHTML.replace(regex, '<mark>$1</mark>');
+            matchedRows.push(clonedRow.outerHTML);
+resultDiv.innerHTML += `
+  <div class="result-table-wrapper">
+    <table><tr>${clonedRow.innerHTML}</tr></table>
+  </div>`;
+          }
         });
-
-        rowHTML = rowHTML.replace(regex6, '<mark>$1</mark>');
-        matchedRows.push("<tr>" + rowHTML + "</tr>");
-      }
-    } else if (baseMatch && !variationWord) {
-      let rowHTML = row.innerHTML;
-      searchWords.forEach(word => {
-        const regex = new RegExp(`(${word})`, 'gi');
-        rowHTML = rowHTML.replace(regex, '<mark>$1</mark>');
       });
-      matchedRows.push("<tr>" + rowHTML + "</tr>");
-    }
-  });
 
-  displayResults();
+      updateColumnFilter();
+    };
+    reader.readAsText(file);
+  });
 }
 
-function displayResults() {
-  const resultsDiv = document.getElementById("results");
-  if (!matchedRows.length) {
-    resultsDiv.innerHTML = "<p>No matching rows found.</p>";
-    return;
-  }
+function updateColumnFilter() {
+  const dropdown = document.getElementById('columnFilter');
+  const currentValue = dropdown.value;
+  dropdown.innerHTML = '<option value="">-- Select a word --</option>';
 
-  const tableHTML = `<table><tbody>${matchedRows.join("")}</tbody></table>`;
-  resultsDiv.innerHTML = tableHTML;
+  Array.from(fourthColumnWords).sort().forEach(word => {
+    const option = document.createElement('option');
+    option.value = word;
+    option.textContent = word;
+    dropdown.appendChild(option);
+  });
+
+  dropdown.value = currentValue;
 }
 
 function downloadDoc() {
@@ -104,7 +83,64 @@ function downloadDoc() {
     return;
   }
 
-  const content = `<table><tbody>${matchedRows.join("")}</tbody></table>`;
-  const converted = window.htmlDocx.asBlob(content);
-  saveAs(converted, "Marathi_Search_Result.docx");
+  const tableHTML = `<table><tbody>${matchedRows.join("")}</tbody></table>`;
+  const fullHTML = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office"
+          xmlns:w="urn:schemas-microsoft-com:office:word"
+          xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+      <meta charset="UTF-8">
+      <title>Marathi Search Result</title>
+      <style>
+        @page {
+          size: A4;
+          margin: 1in;
+        }
+        body {
+          font-family: 'Noto Sans Devanagari', sans-serif;
+          font-size: 12pt;
+        }
+        table, td, th {
+          border: 1px solid black;
+          border-collapse: collapse;
+        }
+        td, th {
+          padding: 6px;
+        }
+        mark {
+          background-color: yellow;
+        }
+      </style>
+    </head>
+    <body>${tableHTML}</body>
+    </html>`;
+
+  const blob = new Blob(['\ufeff', fullHTML], {
+    type: 'application/msword',
+  });
+
+  saveAs(blob, "Marathi_Search_Result.doc");
 }
+
+function downloadExcel() {
+  if (!matchedRows.length) {
+    alert("No results to export.");
+    return;
+  }
+
+  const tempTable = document.createElement("table");
+  tempTable.innerHTML = matchedRows.join("");
+
+  const ws = XLSX.utils.table_to_sheet(tempTable);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Filtered Results");
+
+  XLSX.writeFile(wb, "Marathi_Search_Result.xlsx");
+}
+
+document.getElementById('fileInput').addEventListener('change', function () {
+  const count = this.files.length;
+  document.getElementById('fileCount').textContent = count
+    ? `${count} फाइल${count > 1 ? '्स' : ''} निवडल्या`
+    : "कोणतीही फाइल निवडलेली नाही";
+});

@@ -3,51 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Marathi Table Search Tool</title>
+  <title>Marathi Table Search</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>📝 Marathi Table Search</h1>
-
-    <div class="upload-section">
-      <label for="fileInput">Upload XLS Files:</label>
-      <input type="file" id="fileInput" accept=".xls" multiple>
+    <h1>मराठी टेबल शोध</h1>
+<div class="file-upload">
+  <label for="fileInput" class="upload-btn">📁 फाइल निवडा</label>
+  <input type="file" id="fileInput" multiple accept=".xls,.xlsx" />
+  <span id="fileCount">कोणतीही फाइल निवडलेली नाही</span>
+</div>
+    <br /><br />
+    <div class="search-boxes">
+  <div class="search-row">
+    <div class="search-field">
+      <label for="search1"> गावाचे नाव</label>
+      <input type="text" id="search1" placeholder="उदाहरण: शिक्षण" />
     </div>
-
-    <div class="search-section">
-      <label for="searchInput1">गावाचे नाव</label>
-      <input type="text" id="searchInput1" placeholder="Enter Youre Text Here....">
-
-      <label for="searchInput2">गट नंबर</label>
-      <input type="text" id="searchInput2" placeholder="Enter Youre Text Here....">
-
-      <label for="searchInput3">नाव</label>
-      <input type="text" id="searchInput3" placeholder="Enter Youre Text Here....">
-
-      <label for="searchInput4">Document No.</label>
-      <input type="text" id="searchInput4" placeholder="Enter Youre Text Here....">
-
-      <label for="searchInput5">Document Name</label>
-      <input type="text" id="searchInput5" placeholder="Enter Youre Text Here....">
-
-      <label for="searchInput6">Marathi Word 6 (Variation Match):</label>
-      <input type="text" id="searchInput6" placeholder="Enter Youre Text Here....">
-
-      <button onclick="searchWord()">Search</button>
+    <div class="search-field">
+      <label for="search2"> गट नंबर</label>
+      <input type="text" id="search2" placeholder="उदाहरण: संगणक" />
     </div>
+  </div>
 
-    <div id="resultSection">
-      <h2>Search Results</h2>
-      <div id="results"></div>
+  <div class="search-row">
+    <div class="search-field">
+      <label for="search3"> नाव</label>
+      <input type="text" id="search3" placeholder="उदाहरण: शासन" />
     </div>
+    <div class="search-field">
+      <label for="search4"> डॉक्युमेंट नंबर</label>
+      <input type="text" id="search4" placeholder="उदाहरण: जिल्हा" />
+    </div>
+  </div>
 
-    <button id="downloadBtn" onclick="downloadDoc()">⬇️ Download as Word</button>
+  <div class="search-row">
+    <div class="search-field">
+      <label for="search5">🔍 शब्द ५</label>
+      <input type="text" id="search5" placeholder="उदाहरण: नोकरी" />
+    </div>
+    <div class="search-field">
+      <label for="search6">🔍 शब्द ६ (विकृत/अन्य रूपे)</label>
+      <input type="text" id="search6" placeholder="उदाहरण: गुगल / गूगल" />
+    </div>
+  </div>
+</div>
+
+
+    <br />
+    <label for="columnFilter"> डॉक्युमेंट नाव</label>
+    <select id="columnFilter" onchange="searchTables()">
+      <option value=""> नाव सिलेक्टक करा</option>
+    </select>
+    <br /><br />
+    <button onclick="searchTables()">शोधा</button>
+    <button onclick="downloadDoc()">Word मध्ये डाउनलोड करा</button>
+    <button onclick="downloadExcel()">Excel मध्ये डाउनलोड करा</button>
+    <div id="result"></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.4.1/dist/html-docx.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

@@ -10,39 +10,48 @@
 <body>
   <div class="container">
     <h1>मराठी टेबल शोध</h1>
+	<div class="language-switch">
+  <label>
+    <input type="radio" name="lang" value="mr" checked onchange="switchLanguage(this.value)" /> मराठी
+  </label>
+  <label>
+    <input type="radio" name="lang" value="en" onchange="switchLanguage(this.value)" /> English
+  </label>
+</div>
+
 <div class="file-upload">
   <label for="fileInput" class="upload-btn">📁 फाइल निवडा</label>
   <input type="file" id="fileInput" multiple accept=".xls,.xlsx" />
-  <span id="fileCount">कोणतीही फाइल नाही</span>
+  <span id="fileCount">कोणतीही फाइल निवडलेली नाही</span>
 </div>
     <br /><br />
     <div class="search-boxes">
   <div class="search-row">
     <div class="search-field">
       <label for="search1"> गावाचे नाव</label>
-      <input type="text" id="search1" placeholder="उदाहरण:  पुणे" />
+      <input type="text" id="search1" placeholder="उदाहरण: शिक्षण" />
     </div>
     <div class="search-field">
       <label for="search2"> गट नंबर</label>
-      <input type="text" id="search2" placeholder="उदाहरण:  217" />
+      <input type="text" id="search2" placeholder="उदाहरण: संगणक" />
     </div>
   </div>
 
   <div class="search-row">
     <div class="search-field">
       <label for="search3"> नाव</label>
-      <input type="text" id="search3" placeholder="उदाहरण:  प्रसाद देशपांडे" />
+      <input type="text" id="search3" placeholder="उदाहरण: शासन" />
     </div>
     <div class="search-field">
       <label for="search4"> डॉक्युमेंट नंबर</label>
-      <input type="text" id="search4" placeholder="उदाहरण:  4325" />
+      <input type="text" id="search4" placeholder="उदाहरण: जिल्हा" />
     </div>
   </div>
 
   <div class="search-row">
     <div class="search-field">
       <label for="search5">🔍 शब्द ५</label>
-      <input type="text" id="search5" placeholder="उदाहरण:_______" />
+      <input type="text" id="search5" placeholder="उदाहरण: नोकरी" />
     </div>
     <div class="search-field">
       <label for="search6">🔍 शब्द ६ (विकृत/अन्य रूपे)</label>

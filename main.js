@@ -30,17 +30,35 @@ function searchTables() {
 
         rows.forEach(row => {
           const cells = row.querySelectorAll('td, th');
-          const rowText = row.textContent;
           const fourthColText = cells[3]?.textContent || "";
-
           if (cells.length >= 4) {
             fourthColumnWords.add(fourthColText.trim());
           }
 
-          const matches = searches.every(word => word === "" || rowText.includes(word));
+          let match = true;
+
+          if (searches[0]) {
+            match = [5, 8, 9].some(i => cells[i]?.textContent.includes(searches[0])) && match;
+          }
+          if (searches[1]) {
+            match = [8].some(i => cells[i]?.textContent.includes(searches[1])) && match;
+          }
+          if (searches[2]) {
+            match = [6, 7].some(i => cells[i]?.textContent.includes(searches[2])) && match;
+          }
+          if (searches[3]) {
+            match = cells[2]?.textContent.includes(searches[3]) && match;
+          }
+          if (searches[4]) {
+            match = row.textContent.includes(searches[4]) && match;
+          }
+          if (searches[5]) {
+            match = row.textContent.includes(searches[5]) && match;
+          }
+
           const matchFilter = columnFilter === "" || fourthColText.includes(columnFilter);
 
-          if (matches && matchFilter) {
+          if (match && matchFilter) {
             const clonedRow = row.cloneNode(true);
             searches.forEach(word => {
               if (word) clonedRow.innerHTML = clonedRow.innerHTML.replaceAll(word, `<mark>${word}</mark>`);
@@ -48,10 +66,10 @@ function searchTables() {
             if (columnFilter) clonedRow.innerHTML = clonedRow.innerHTML.replaceAll(columnFilter, `<mark>${columnFilter}</mark>`);
 
             matchedRows.push(clonedRow.outerHTML);
-resultDiv.innerHTML += `
-  <div class="result-table-wrapper">
-    <table><tr>${clonedRow.innerHTML}</tr></table>
-  </div>`;
+            resultDiv.innerHTML += `
+              <div class="result-table-wrapper">
+                <table><tr>${clonedRow.innerHTML}</tr></table>
+              </div>`;
           }
         });
       });
